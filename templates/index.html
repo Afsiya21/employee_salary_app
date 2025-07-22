@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Employee Salary  Predictor ✨</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(-45deg, #f3e7e9, #e3eeff, #f9f9f9, #d4fc79);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            max-width: 800px;
+            margin: 50px auto;
+            border-radius: 20px;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #2d3436;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            color: #34495e;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #dcdde1;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #6c5ce7;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #4e4ae8;
+        }
+
+        .prediction {
+            text-align: center;
+            font-size: 22px;
+            margin-top: 25px;
+            color: #0984e3;
+            animation: fadeIn 1.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        .icon {
+            color: #f9a825;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2><i class="fa-solid fa-sack-dollar icon"></i> Employee Salary  Predictor ✨</h2>
+        <form method="POST" action="/predict">
+            <label>Age:</label>
+            <input type="number" name="age" required>
+
+            <label>Fnlwgt:</label>
+            <input type="number" name="fnlwgt" required>
+
+            <label>Education Number:</label>
+            <input type="number" name="education_num" required>
+
+            <label>Capital Gain:</label>
+            <input type="number" name="capital_gain" required>
+
+            <label>Capital Loss:</label>
+            <input type="number" name="capital_loss" required>
+
+            <label>Hours per Week:</label>
+            <input type="number" name="hours_per_week" required>
+
+            <label>Workclass:</label>
+            <select name="workclass">
+              <option>Private</option>
+              <option>Self-emp-not-inc</option>
+              <option>Local-gov</option>
+            </select>
+
+            <label>Education:</label>
+            <select name="education" required>
+                <option>Bachelors</option>
+                <option>HS-grad</option>
+                <option>11th</option>
+                <option>Masters</option>
+                <option>Some-college</option>
+                <option>Doctorate</option>
+                <option>Assoc-acdm</option>
+                <option>Prof-school</option>
+            </select>
+
+            <label>Marital Status:</label>
+            <select name="marital_status" required>
+                <option>Never-married</option>
+                <option>Married-civ-spouse</option>
+                <option>Divorced</option>
+                <option>Separated</option>
+                <option>Widowed</option>
+            </select>
+
+            <label>Occupation:</label>
+            <select name="occupation" required>
+                <option>Tech-support</option>
+                <option>Craft-repair</option>
+                <option>Sales</option>
+                <option>Exec-managerial</option>
+                <option>Prof-specialty</option>
+            </select>
+
+            <label>Relationship:</label>
+            <select name="relationship" required>
+                <option>Husband</option>
+                <option>Not-in-family</option>
+                <option>Unmarried</option>
+                <option>Own-child</option>
+            </select>
+
+            <label>Race:</label>
+            <select name="race" required>
+                <option>White</option>
+                <option>Black</option>
+                <option>Asian-Pac-Islander</option>
+                <option>Other</option>
+            </select>
+
+            <label>Gender:</label>
+            <select name="gender" required>
+                <option>Male</option>
+                <option>Female</option>
+            </select>
+
+            <label>Native Country:</label>
+            <select name="native_country" required>
+                <option>United-States</option>
+                <option>India</option>
+                <option>Mexico</option>
+                <option>Philippines</option>
+                <option>Germany</option>
+            </select>
+
+            <button type="submit"><i class="fa-solid fa-magic"></i> Predict Salary</button>
+        </form>
+
+        {% if prediction %}
+        <div class="prediction">
+            <i class="fa-solid fa-circle-check"></i> {{ prediction }}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
