@@ -192,7 +192,15 @@ with col2:
             
             # Make prediction
             prediction = model.predict(X_scaled)[0]
-            prediction_proba = model.predict_proba(X_scaled)[0]
+            
+            # Try to get prediction probabilities (not all models support this)
+            try:
+                prediction_proba = model.predict_proba(X_scaled)[0]
+                has_proba = True
+            except AttributeError:
+                # SVC without probability=True doesn't have predict_proba
+                prediction_proba = None
+                has_proba = False
             
             # Display result
             if prediction == 1:
@@ -202,7 +210,8 @@ with col2:
                     High earning potential detected!
                 </div>
                 """, unsafe_allow_html=True)
-                confidence = prediction_proba[1] * 100
+                if has_proba:
+                    confidence = prediction_proba[1] * 100
             else:
                 st.markdown("""
                 <div class="prediction-low">
@@ -210,10 +219,14 @@ with col2:
                     Moderate earning range predicted.
                 </div>
                 """, unsafe_allow_html=True)
-                confidence = prediction_proba[0] * 100
+                if has_proba:
+                    confidence = prediction_proba[0] * 100
             
-            # Show confidence
-            st.info(f"🎯 Prediction Confidence: {confidence:.1f}%")
+            # Show confidence if available
+            if has_proba:
+                st.info(f"🎯 Prediction Confidence: {confidence:.1f}%")
+            else:
+                st.info("🎯 Prediction completed (confidence scores not available for this model type)")
             
             # Show feature importance insights
             with st.expander("📈 Prediction Insights"):

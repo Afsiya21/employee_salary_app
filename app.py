@@ -104,7 +104,19 @@ def predict():
 
         # Predict
         prediction = model.predict(X_scaled)[0]
-        result = "✨ Salary >50K ✨" if prediction == 1 else "💼 Salary <=50K 💼"
+        
+        # Handle SVC models that don't have predict_proba
+        try:
+            prediction_proba = model.predict_proba(X_scaled)[0]
+            if prediction == 1:
+                confidence = prediction_proba[1] * 100
+                result = f"✨ Salary >50K ✨ (Confidence: {confidence:.1f}%)"
+            else:
+                confidence = prediction_proba[0] * 100
+                result = f"💼 Salary <=50K 💼 (Confidence: {confidence:.1f}%)"
+        except AttributeError:
+            # SVC without probability=True doesn't have predict_proba
+            result = "✨ Salary >50K ✨" if prediction == 1 else "💼 Salary <=50K 💼"
 
         print("Predicted result:", result)
         return render_template("index.html", prediction=result)
