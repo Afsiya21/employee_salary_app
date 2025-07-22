@@ -4,9 +4,12 @@ import pandas as pd
 import os
 import warnings
 
-# Suppress sklearn version warnings for deployment
+# Suppress sklearn warnings for deployment
 warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
 warnings.filterwarnings("ignore", message=".*version.*")
+warnings.filterwarnings("ignore", message=".*feature names.*")
+warnings.filterwarnings("ignore", message=".*InconsistentVersionWarning.*")
+warnings.filterwarnings("ignore", message=".*X does not have valid feature names.*")
 
 # Try different import methods for joblib
 try:
@@ -178,28 +181,14 @@ with col2:
             while len(features) < 100:
                 features.append(0)
             
-            # Create proper feature names for the DataFrame
-            feature_names = (
-                ['age', 'fnlwgt', 'education_num', 'capital_gain', 'capital_loss', 'hours_per_week'] +
-                [f'workclass_{opt}' for opt in workclass_options] +
-                [f'education_{opt}' for opt in education_options] +
-                [f'marital_status_{opt}' for opt in marital_status_options] +
-                [f'occupation_{opt}' for opt in occupation_options] +
-                [f'relationship_{opt}' for opt in relationship_options] +
-                [f'race_{opt}' for opt in race_options] +
-                [f'gender_{opt}' for opt in gender_options] +
-                [f'native_country_{opt}' for opt in native_country_options]
-            )
+            # Use the exact same approach as the original app.py to avoid feature name issues
+            # Convert to NumPy array and let the scaler handle it without feature names
+            X = np.array(features).reshape(1, -1)
             
-            # Pad feature names to match the required length
-            while len(feature_names) < len(features):
-                feature_names.append(f'feature_{len(feature_names)}')
-                
-            # Create DataFrame with proper feature names
-            X_df = pd.DataFrame([features[:len(feature_names)]], columns=feature_names[:len(features)])
-            
-            # Scale the features using DataFrame
-            X_scaled = scaler.transform(X_df)
+            # Scale the features using NumPy array (avoiding feature names issue)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                X_scaled = scaler.transform(X)
             
             # Make prediction
             prediction = model.predict(X_scaled)[0]
