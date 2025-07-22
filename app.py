@@ -1,12 +1,29 @@
 from flask import Flask, render_template, request
 import numpy as np
-import joblib
+import os
+
+# Try different import methods for joblib
+try:
+    from sklearn.externals import joblib
+except ImportError:
+    import joblib
 
 app = Flask(__name__)
 
-# Load model and scaler
-model = joblib.load("D:/collabnote/employee_salary_app/salary_predictor (3).pkl")
-scaler = joblib.load("D:/collabnote/employee_salary_app/scaler (3).pkl")
+# Get the directory where this script is located
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Load model and scaler using relative paths
+model_path = os.path.join(BASE_DIR, "salary_predictor (3).pkl")
+scaler_path = os.path.join(BASE_DIR, "scaler (3).pkl")
+
+try:
+    model = joblib.load(model_path)
+    scaler = joblib.load(scaler_path)
+    print("✅ Model and scaler loaded successfully!")
+except Exception as e:
+    print(f"❌ Error loading model files: {e}")
+    model, scaler = None, None
 
 # Define all possible categories for one-hot encoding
 workclass_options = ['Private', 'Self-emp-not-inc', 'Local-gov']
@@ -22,8 +39,22 @@ native_country_options = ['United-States', 'India']
 def home():
     return render_template("index.html")
 
+@app.route('/health')
+def health_check():
+    """Health check endpoint for deployment platforms"""
+    status = {
+        'status': 'healthy',
+        'model_loaded': model is not None,
+        'scaler_loaded': scaler is not None
+    }
+    return status
+
 @app.route('/predict', methods=['POST'])
 def predict():
+    # Check if model is loaded
+    if model is None or scaler is None:
+        return render_template("index.html", prediction="❌ Model not loaded. Please check server logs.")
+    
     try:
         # Get numeric input
         age = int(request.form['age'])
@@ -78,8 +109,18 @@ def predict():
         print("Predicted result:", result)
         return render_template("index.html", prediction=result)
 
+    except ValueError as ve:
+        print(f"Input validation error: {ve}")
+        return render_template("index.html", prediction="❌ Please enter valid numeric values.")
     except Exception as e:
-        return f"Error occurred: {e}"
+        print(f"Prediction error: {e}")
+        return render_template("index.html", prediction="❌ An error occurred during prediction. Please try again.")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Get port from environment variable for deployment platforms like Heroku
+    port = int(os.environ.get('PORT', 5000))
+    # Set debug based on environment
+    debug = os.environ.get('FLASK_ENV', 'production') == 'development'
+    
+    print(f"🚀 Starting Flask app on port {port}")
+    app.run(host='0.0.0.0', port=port, debug=debug)
