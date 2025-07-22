@@ -1,6 +1,12 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 import os
+import warnings
+
+# Suppress sklearn version warnings for deployment
+warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
+warnings.filterwarnings("ignore", message=".*version.*")
 
 # Try different import methods for joblib
 try:
@@ -172,11 +178,28 @@ with col2:
             while len(features) < 100:
                 features.append(0)
             
-            # Convert to NumPy and reshape
-            X = np.array(features).reshape(1, -1)
+            # Create proper feature names for the DataFrame
+            feature_names = (
+                ['age', 'fnlwgt', 'education_num', 'capital_gain', 'capital_loss', 'hours_per_week'] +
+                [f'workclass_{opt}' for opt in workclass_options] +
+                [f'education_{opt}' for opt in education_options] +
+                [f'marital_status_{opt}' for opt in marital_status_options] +
+                [f'occupation_{opt}' for opt in occupation_options] +
+                [f'relationship_{opt}' for opt in relationship_options] +
+                [f'race_{opt}' for opt in race_options] +
+                [f'gender_{opt}' for opt in gender_options] +
+                [f'native_country_{opt}' for opt in native_country_options]
+            )
             
-            # Scale the features
-            X_scaled = scaler.transform(X)
+            # Pad feature names to match the required length
+            while len(feature_names) < len(features):
+                feature_names.append(f'feature_{len(feature_names)}')
+                
+            # Create DataFrame with proper feature names
+            X_df = pd.DataFrame([features[:len(feature_names)]], columns=feature_names[:len(features)])
+            
+            # Scale the features using DataFrame
+            X_scaled = scaler.transform(X_df)
             
             # Make prediction
             prediction = model.predict(X_scaled)[0]
