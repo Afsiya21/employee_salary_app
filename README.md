@@ -47,6 +47,20 @@ A machine learning-powered web application that predicts employee salaries based
 
 ## 🎯 Usage
 
+### For Streamlit App (Recommended):
+1. **Run the Streamlit application**:
+   ```bash
+   streamlit run streamlit_app.py
+   ```
+
+2. **The app will automatically open** in your browser at:
+   ```
+   http://localhost:8501
+   ```
+
+3. **Fill in the sidebar form** with employee details and click "Predict Salary".
+
+### For Flask App (Alternative):
 1. **Run the Flask application**:
    ```bash
    python app.py
@@ -57,25 +71,28 @@ A machine learning-powered web application that predicts employee salaries based
    http://localhost:5000
    ```
 
-3. **Enter years of experience** in the input field and click "Predict Salary" to get the predicted salary.
-
 ## 📁 Project Structure
 
 ```
 employee_salary_app/
 │
-├── app.py                      # Main Flask application
+├── streamlit_app.py            # Main Streamlit application (recommended)
+├── app.py                      # Flask application (alternative)
 ├── requirements.txt            # Python dependencies
+├── Procfile                    # For Heroku deployment
 ├── salary_predictor (3).pkl    # Trained ML model
 ├── scaler (3).pkl             # Data scaler for preprocessing
 ├── .gitignore                 # Git ignore rules
 ├── README.md                  # Project documentation
 │
+├── .streamlit/
+│   └── config.toml            # Streamlit configuration
+│
 ├── templates/
-│   └── index.html             # HTML template for the web interface
+│   └── index.html             # HTML template for Flask app
 │
 └── static/
-    └── styles.css             # CSS styles for the web interface
+    └── styles.css             # CSS styles for Flask app
 ```
 
 ## 🤖 Model Information
@@ -94,10 +111,23 @@ The application uses a pre-trained machine learning model that:
 - Pandas (if used for data processing)
 - Pickle (built-in Python module)
 
-## 📊 API Endpoints
+## 🚀 Streamlit Cloud Deployment
+
+This app is deployed on Streamlit Cloud! You can access it at: [Employee Salary Predictor](https://your-app-url.streamlit.app)
+
+### Deploy to Streamlit Cloud:
+1. Fork this repository
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Connect your GitHub account
+4. Select this repository
+5. Set main file path to: `streamlit_app.py`
+6. Click "Deploy!"
+
+## 📊 API Endpoints (Flask Version)
 
 - `GET /` - Home page with the prediction form
 - `POST /predict` - Endpoint for salary prediction
+- `GET /health` - Health check endpoint
 
 ## 🤝 Contributing
 

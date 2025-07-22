@@ -1,5 +1,4 @@
-flask
-joblib
-numpy
-scikit-learn
+streamlit>=1.28.0
+numpy>=1.21.0
+scikit-learn>=1.0.0
 
